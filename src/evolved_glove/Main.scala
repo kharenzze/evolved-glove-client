@@ -7,45 +7,41 @@ import java.nio.ByteBuffer
 /**
   * Created by Paolo on 2/9/17.
   */
-class Main {
-  def main(args: Array[String]) {
-    val SIZE = 1024
-    val PORT = 58285
+object Main {
+  val SIZE = 1024
+  val SRC_PORT = 58285
+  val DST_PORT = 58878
+  val DST_HOST_NAME = "piwifi"
+  var socket : DatagramSocket = _
+
+  def initialize(): Unit = {
+    socket = new DatagramSocket(SRC_PORT)
+  }
+
+  def sendHelloMessage():Unit = {
+    val message = "HELLO"
+    val data = message.getBytes()
+    val ipDest = InetAddress.getByName(DST_HOST_NAME)
+    val packet = new DatagramPacket(data, data.length, ipDest, DST_PORT)
+    socket.send(packet)
+  }
+
+  def receivePacket():DatagramPacket = {
     val buffer = new Array[Byte](SIZE)
     val pkt_in = new DatagramPacket(buffer, buffer.length)
+    socket.receive(pkt_in)
+    pkt_in
+  }
 
-    val socket = new DatagramSocket(PORT)
-
-    //    val buffer = new Array[Byte](SIZE)
-    //    val packet = new DatagramPacket(buffer, buffer.length)
-    //      socket.receive(packet)
-    //      val message = new String(packet.getData)
-    //      val ipAddress = packet.getAddress().toString
-    //      println("received from " + ipAddress + ": " + message)
-
-    val data = "HELLO".getBytes()
-    val ipDest = InetAddress.getByName("piwifi")
-    val port = 58878
-    val packet = new DatagramPacket(data, data.length, ipDest, port)
-
-    socket.send(packet)
+  def main(args: Array[String]) {
+    initialize()
+    sendHelloMessage()
 
     while (true) {
-      socket.receive(pkt_in)
-
-      //      val message = new String(pkt_in.getData().take(pkt_in.getLength))
-      //      println(message)
-
+      val pkt_in = receivePacket()
       val data = pkt_in.getData().take(pkt_in.getLength).reverse
-      val intData = ByteBuffer.wrap(data).getFloat()
+      val intData = ByteBuffer.wrap(data).getInt()
       println(s"Received ${intData}, length ${pkt_in.getLength}   ")
-      for (i <- 0 to 3) {
-        print(pkt_in.getData()(i))
-      }
     }
-
-
-    // respond
-    //    socket.send(packet)
   }
 }
