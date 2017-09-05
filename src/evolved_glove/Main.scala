@@ -3,6 +3,7 @@ package evolved_glove
 import java.io._
 import java.net._
 import java.nio.ByteBuffer
+import evolved_glove.HandState
 
 /**
   * Created by Paolo on 2/9/17.
@@ -39,9 +40,10 @@ object Main {
 
     while (true) {
       val pkt_in = receivePacket()
-      val data = pkt_in.getData().take(pkt_in.getLength).reverse
-      val intData = ByteBuffer.wrap(data).getInt()
-      println(s"Received ${intData}, length ${pkt_in.getLength}   ")
+//      val data = pkt_in.getData().take(pkt_in.getLength).reverse
+//      val intData = ByteBuffer.wrap(data).getInt()
+//      println(s"Received ${intData}, length ${pkt_in.getLength}   ")
+      new HandState(pkt_in)
     }
   }
 }
