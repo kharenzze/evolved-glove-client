@@ -8,12 +8,13 @@ import evolved_glove.HandState
 /**
   * Created by Paolo on 2/9/17.
   */
-object Main {
+private object Main {
   val SIZE = 1024
   val SRC_PORT = 58285
   val DST_PORT = 58878
   val DST_HOST_NAME = "piwifi"
-  var socket : DatagramSocket = _
+  private var socket : DatagramSocket = _
+  private var EGIPAddr : String = ""
 
   def initialize(): Unit = {
     socket = new DatagramSocket(SRC_PORT)
@@ -22,7 +23,7 @@ object Main {
   def sendHelloMessage():Unit = {
     val message = "HELLO"
     val data = message.getBytes()
-    val ipDest = InetAddress.getByName(DST_HOST_NAME)
+    val ipDest = InetAddress.getByName(EGIPAddr)
     val packet = new DatagramPacket(data, data.length, ipDest, DST_PORT)
     socket.send(packet)
   }
@@ -35,6 +36,12 @@ object Main {
   }
 
   def main(args: Array[String]) {
+    if (args.length > 0) {
+      EGIPAddr = args(0)
+    } else {
+      EGIPAddr = DST_HOST_NAME
+    }
+
     initialize()
     sendHelloMessage()
 
