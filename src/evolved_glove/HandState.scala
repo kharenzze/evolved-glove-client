@@ -9,6 +9,7 @@ import evolved_glove.EGCalibration
   */
 class HandState (pkt : DatagramPacket) {
   val normalizedFingers =  new Array[Double](EGCalibration.nFingers)
+  val orientation = new Array[Double](3)
   private var _timestamp : Long = 0
 
   loadPkt(pkt)
@@ -28,6 +29,7 @@ class HandState (pkt : DatagramPacket) {
   def loadPkt (pkt : DatagramPacket): Unit = {
     val pktIterator = new PacketLoaderHelper(pkt)
     var fingerNumber = 0
+    var orientationNumber = 0
     while (pktIterator.hasNext) {
       val iteration = pktIterator.currentDataIteration
       val _data = pktIterator.next()
@@ -35,12 +37,16 @@ class HandState (pkt : DatagramPacket) {
       if (iteration == 0) {
         _timestamp = _loadLong(_data)
         println(_timestamp)
-      } else {
+      } else if (iteration < 9) {
         val voltage = _loadDouble(_data)
         EGCalibration.recalibrateFinger(fingerNumber, voltage)
         normalizedFingers(fingerNumber) = EGCalibration.normalizeFingerVoltage(fingerNumber, voltage)
         println(s"Current $fingerNumber, data ${normalizedFingers(fingerNumber)}   ")
         fingerNumber += 1
+      } else {
+        orientation(orientationNumber) = _loadDouble(_data)
+        println(s"Orientation $orientationNumber = ${orientation(orientationNumber)}")
+        orientationNumber += 1
       }
     }
   }
