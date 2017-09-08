@@ -36,16 +36,19 @@ class HandState (pkt : DatagramPacket) {
 
       if (iteration == 0) {
         _timestamp = _loadLong(_data)
-        println(_timestamp)
+        if (EGConfig.debugPackets)
+          println(_timestamp)
       } else if (iteration < 9) {
         val voltage = _loadDouble(_data)
         EGCalibration.recalibrateFinger(fingerNumber, voltage)
         normalizedFingers(fingerNumber) = EGCalibration.normalizeFingerVoltage(fingerNumber, voltage)
-        println(s"Current $fingerNumber, data ${normalizedFingers(fingerNumber)}   ")
+        if (EGConfig.debugPackets)
+          println(s"Current $fingerNumber, data ${normalizedFingers(fingerNumber)}   ")
         fingerNumber += 1
       } else {
         orientation(orientationNumber) = _loadDouble(_data)
-        println(s"Orientation $orientationNumber = ${orientation(orientationNumber)}")
+        if (EGConfig.debugPackets)
+          println(s"Orientation $orientationNumber = ${orientation(orientationNumber)}")
         orientationNumber += 1
       }
     }
