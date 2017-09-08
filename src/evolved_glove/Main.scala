@@ -42,6 +42,8 @@ private object Main {
       EGIPAddr = DST_HOST_NAME
     }
 
+    var discardCount = 100
+
     initialize()
     sendHelloMessage()
 
@@ -51,9 +53,13 @@ private object Main {
 //      val data = pkt_in.getData().take(pkt_in.getLength).reverse
 //      val intData = ByteBuffer.wrap(data).getInt()
 //      println(s"Received ${intData}, length ${pkt_in.getLength}   ")
-      new HandState(pkt_in)
+      val event = new HandState(pkt_in)
       i += 1
       println(i)
+      if (discardCount == 0)
+        MouseManager.processEvent(event)
+      else
+        discardCount -= 1
     }
   }
 }
