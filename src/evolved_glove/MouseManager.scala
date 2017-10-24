@@ -1,17 +1,22 @@
 package evolved_glove
 import java.awt.{MouseInfo, Robot}
-import java.awt.event.InputEvent;
+import java.awt.event.InputEvent
+import java.awt.Toolkit
 
 /**
   * Created by Paolo on 08/09/2017.
   */
 object MouseManager {
   private val robot = new Robot()
-  private val xSens = 20
-  private val ySens = 20
-  private val clickThreshold = 0.75
-
+  private val sens = {
+    val screenDimensions = Toolkit.getDefaultToolkit.getScreenSize
+    screenDimensions.getHeight /100 * 3
+  }
+  private val xSens = sens
+  private val ySens = sens
+  private val clickThreshold = 0.50
   private var lastEvent : HandState = _
+
   private var isClickPressed = false
 
   def processEvent (handEvent : HandState): Unit = {
@@ -51,7 +56,7 @@ object MouseManager {
       else
         lastEvent.orientation(0)
     }
-    val dx = (currentX - adjustedPreviousX) * xSens
+    val dx = (currentX - adjustedPreviousX) * xSens * sensitivityControl(handEvent)
     dx.toInt
   }
 
@@ -59,9 +64,11 @@ object MouseManager {
     val currentY = handEvent.orientation(2)
     val adjustedPreviousY = lastEvent.orientation(2)
 
-    val dy = (currentY - adjustedPreviousY) * ySens
+    val dy = (currentY - adjustedPreviousY) * ySens * sensitivityControl(handEvent)
     dy.toInt
   }
 
   private def detectClick (handEvent: HandState):Boolean = handEvent.normalizedFingers(7) > clickThreshold
+
+  private def sensitivityControl (handState: HandState): Double = (1 - handState.normalizedFingers(1)) * (1 - handState.normalizedFingers(0))
 }
