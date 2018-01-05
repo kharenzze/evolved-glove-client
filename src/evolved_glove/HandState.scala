@@ -38,7 +38,7 @@ class HandState (pkt : DatagramPacket) {
         _timestamp = _loadLong(_data)
         if (EGConfig.debugPackets)
           println(_timestamp)
-      } else if (iteration < 9) {
+      } else if (iteration < 11) {
         val voltage = _loadDouble(_data)
         EGCalibration.recalibrateFinger(fingerNumber, voltage)
         normalizedFingers(fingerNumber) = EGCalibration.normalizeFingerVoltage(fingerNumber, voltage)

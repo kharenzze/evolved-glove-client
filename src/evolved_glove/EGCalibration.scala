@@ -4,7 +4,7 @@ package evolved_glove
   * Created by Paolo on 06/09/2017.
   */
 object EGCalibration {
-  val nFingers = 8
+  val nFingers = 10
   val maxFingersVoltage = Array.fill[Double](nFingers)(0)
   val minFingersVoltage = Array.fill[Double](nFingers)(Double.PositiveInfinity)
   
